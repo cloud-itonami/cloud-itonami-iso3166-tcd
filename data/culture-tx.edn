@@ -1,0 +1,14 @@
+;; data/culture-tx.edn — DataScript tx-data derived from src/culture/facts.cljc
+;; `culture.facts/catalog` (ADR-2607171400 addendum 2, Wave 1 country-level).
+;; Same shape across every cloud-itonami-iso3166-* sibling. Do not hand-edit;
+;; regenerate from the catalog.
+
+[
+#:culture{:id "tcd.dish.boule", :name "Boule", :country "TCD", :kind :dish, :summary "Thick Chadian porridge made from grains such as millet, sorghum or maize.", :url "https://en.wikipedia.org/wiki/Chadian_cuisine", :url-provenance :wikipedia-en, :retrieved-at "2026-07-17"}
+#:culture{:id "tcd.dish.daraba", :name "Daraba", :country "TCD", :kind :dish, :summary "Traditional Chadian dish prepared with okra, tomatoes, sweet potatoes, greens and peanut butter or paste.", :url "https://en.wikipedia.org/wiki/Chadian_cuisine", :url-provenance :wikipedia-en, :retrieved-at "2026-07-17"}
+#:culture{:id "tcd.dish.jarret-de-boeuf", :name "Jarret de boeuf", :country "TCD", :kind :dish, :summary "Traditional Chadian beef and vegetable stew requiring at least two hours of stewing.", :url "https://en.wikipedia.org/wiki/Chadian_cuisine", :url-provenance :wikipedia-en, :retrieved-at "2026-07-17"}
+#:culture{:url "https://en.wikipedia.org/wiki/Chadian_cuisine", :id "tcd.beverage.karkanji", :kind :beverage, :name-local "Carcaje", :country "TCD", :retrieved-at "2026-07-17", :summary "Red tea made from dried hibiscus flowers, with ginger, clove, cinnamon and sugar added to taste, drunk in Chad.", :name "Karkanji", :url-provenance :wikipedia-en}
+#:culture{:id "tcd.beverage.bili-bili", :name "Bili-bili", :country "TCD", :kind :beverage, :summary "Millet beer consumed in the southern regions of Chad.", :url "https://en.wikipedia.org/wiki/Chadian_cuisine", :url-provenance :wikipedia-en, :retrieved-at "2026-07-17"}
+#:culture{:id "tcd.heritage.ennedi-massif", :name "Ennedi Massif", :country "TCD", :kind :heritage, :summary "Natural and cultural landscape in Chad, inscribed as a UNESCO World Heritage Site in February 2016 at the 40th Session of the World Heritage Committee.", :url "https://en.wikipedia.org/wiki/Ennedi_Plateau", :url-provenance :wikipedia-en, :retrieved-at "2026-07-17"}
+#:culture{:id "tcd.heritage.lakes-of-ounianga", :name "Lakes of Ounianga", :country "TCD", :kind :heritage, :summary "Group of lakes in Chad's Ennedi Ouest region, inscribed as a UNESCO World Heritage Site in 2012 for their exceptional natural characteristics within the Sahara Desert.", :url "https://en.wikipedia.org/wiki/Lakes_of_Ounianga", :url-provenance :wikipedia-en, :retrieved-at "2026-07-17"}
+]
