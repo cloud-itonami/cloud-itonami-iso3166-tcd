@@ -1,0 +1,88 @@
+(ns marketentry.registry-test
+  (:require [clojure.test :refer [deftest is testing]]
+            [marketentry.registry :as registry]))
+
+(deftest engagement-fee-recompute
+  (let [e {:base-fee 500000 :monthly-rate 30000 :monitoring-months 12 :claimed-fee 860000.0}]
+    (is (== 860000.0 (registry/compute-engagement-fee e)))
+    (is (true? (registry/engagement-fee-matches-claim? e))))
+  (let [bad {:base-fee 500000 :monthly-rate 30000 :monitoring-months 12 :claimed-fee 999000.0}]
+    (is (false? (registry/engagement-fee-matches-claim? bad)))))
+
+(deftest register-draft-and-submit
+  (let [d (registry/register-draft "eng-1" "TCD" 0)
+        s (registry/register-submit "eng-1" "TCD" 0)]
+    (is (= "TCD-DFT-000000" (get d "draft_number")))
+    (is (= "TCD-SUB-000000" (get s "submit_number")))
+    (is (nil? (get-in d ["certificate" "proof"])))
+    (is (= "draft-unsigned" (get-in s ["certificate" "status"])))))
+
+(deftest register-requires-ids
+  (is (thrown? Exception (registry/register-draft "" "TCD" 0)))
+  (is (thrown? Exception (registry/register-submit "eng-1" "" 0))))
+
+(deftest national-preference-eligible-by-artisan-or-entrepreneur
+  (is (true? (registry/national-preference-eligible? {:chadian-artisan-or-entrepreneur? true})))
+  (is (false? (registry/national-preference-eligible? {:chadian-artisan-or-entrepreneur? false}))))
+
+(deftest national-preference-eligible-by-capital-majority-either-tier
+  (testing "direct OR indirect Chadian-capital-majority ownership both qualify"
+    (is (true? (registry/national-preference-eligible? {:chadian-capital-majority-direct? true})))
+    (is (true? (registry/national-preference-eligible? {:chadian-capital-majority-indirect? true})))
+    (is (false? (registry/national-preference-eligible? {})))))
+
+(deftest gender-preference-eligible-is-a-separate-test
+  (is (true? (registry/gender-preference-eligible? {:chadian-women-business? true})))
+  (is (false? (registry/gender-preference-eligible? {:chadian-artisan-or-entrepreneur? true
+                                                      :chadian-women-business? false})))
+  (testing "national eligibility does NOT imply gender eligibility, and vice versa"
+    (is (false? (registry/gender-preference-eligible? {:chadian-capital-majority-direct? true})))))
+
+(deftest preference-regime-eligible-dispatch
+  (is (true? (registry/preference-regime-eligible? :national {:chadian-artisan-or-entrepreneur? true})))
+  (is (true? (registry/preference-regime-eligible? :gender {:chadian-women-business? true})))
+  (is (false? (registry/preference-regime-eligible? :national {:chadian-women-business? true})))
+  (is (false? (registry/preference-regime-eligible? nil {:chadian-artisan-or-entrepreneur? true}))))
+
+(deftest price-within-preference-ceiling-is-comparative-not-formulaic
+  (testing "Art.80: 15% ceiling above the best bid"
+    (is (true? (registry/price-within-preference-ceiling?
+                :national {:best-bid-price 1000000.0 :claimed-preferential-price 1150000.0})))
+    (is (false? (registry/price-within-preference-ceiling?
+                 :national {:best-bid-price 1000000.0 :claimed-preferential-price 1150000.01}))))
+  (testing "Art.81: 10% ceiling above the best bid -- a DIFFERENT percentage from Art.80"
+    (is (true? (registry/price-within-preference-ceiling?
+                :gender {:best-bid-price 1000000.0 :claimed-preferential-price 1100000.0})))
+    (is (false? (registry/price-within-preference-ceiling?
+                 :gender {:best-bid-price 1000000.0 :claimed-preferential-price 1100000.01}))))
+  (testing "a missing comparator price fails closed, never assumed compliant"
+    (is (false? (registry/price-within-preference-ceiling?
+                 :national {:claimed-preferential-price 1000000.0})))
+    (is (false? (registry/price-within-preference-ceiling?
+                 :national {:best-bid-price 1000000.0})))))
+
+(deftest preference-regime-ineligible-claim-is-entity-scope-gated
+  (testing "no preference claimed at all -> never flagged"
+    (is (false? (registry/preference-regime-ineligible-claim? {:preference-claim nil}))))
+  (testing "claims :national but fails BOTH eligibility branches (compliant price) -> ineligible"
+    (is (true? (registry/preference-regime-ineligible-claim?
+                {:preference-claim :national
+                 :chadian-artisan-or-entrepreneur? false
+                 :chadian-capital-majority-direct? false
+                 :chadian-capital-majority-indirect? false
+                 :best-bid-price 1000000.0 :claimed-preferential-price 1100000.0}))))
+  (testing "claims :national, IS eligible, but claimed price exceeds the 15% ceiling -> ineligible"
+    (is (true? (registry/preference-regime-ineligible-claim?
+                {:preference-claim :national
+                 :chadian-capital-majority-direct? true
+                 :best-bid-price 1000000.0 :claimed-preferential-price 1200000.0}))))
+  (testing "claims :gender, eligible, price within its OWN 10% ceiling -> NOT flagged"
+    (is (false? (registry/preference-regime-ineligible-claim?
+                 {:preference-claim :gender
+                  :chadian-women-business? true
+                  :best-bid-price 1000000.0 :claimed-preferential-price 1090000.0}))))
+  (testing "claims :gender but only satisfies the NATIONAL eligibility test -> still ineligible for :gender"
+    (is (true? (registry/preference-regime-ineligible-claim?
+                {:preference-claim :gender
+                 :chadian-artisan-or-entrepreneur? true
+                 :best-bid-price 1000000.0 :claimed-preferential-price 1090000.0})))))
