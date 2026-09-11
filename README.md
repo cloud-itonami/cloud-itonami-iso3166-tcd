@@ -42,7 +42,7 @@ company-law instrument, and both border Chad):
   full research trail, the fleet-wide grep-verification of novelty,
   and honestly-flagged gaps this iteration could NOT verify, such as
   the specific Chad-national RCCM-registering agency).
-- `src/statute/facts.cljc` -- general-law catalog: the OHADA Uniform
+- `src/statute/facts.cljk` -- general-law catalog: the OHADA Uniform
   Act on Commercial Companies (AUSCGIE, directly applicable, no
   domestic transposition act), Chad's own Code du Travail (Loi
   n°038/PR/96 du 11 décembre 1996) and Charte des investissements
@@ -76,7 +76,7 @@ Alongside the market-entry / statute catalogs, this repo carries a
 `com-junkawasaki/root`) — national dishes, protected products, beverages,
 crafts, festivals and heritage sites for Chad:
 
-- `src/culture/facts.cljc` — the catalog, source of truth (keyed by
+- `src/culture/facts.cljk` — the catalog, source of truth (keyed by
   uppercase ISO3, mirroring `statute.facts`).
 - `schema/culture.edn` — DataScript schema.
 - `data/culture-tx.edn` — derived DataScript tx-data (regenerated from
