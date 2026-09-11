@@ -7,7 +7,7 @@ Independent public-sector market-entry compliance for Chad.
   -- Code des Marchés Publics (Décret N°2130/PR/2020 du 15 octobre
   2020), which replaces the 2015-era institutional creation decree
   (Décret N°2417/PR/PM/2015) and, before that, Décret n°503/PM/SGG/2003
-  (see `src/marketentry/facts.cljc`)
+  (see `src/marketentry/facts.cljk`)
 - RCCM (Registre du Commerce et du Crédit Mobilier) business
   registration under OHADA's Acte Uniforme relatif au Droit Commercial
   Général
